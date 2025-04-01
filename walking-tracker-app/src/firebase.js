@@ -1,6 +1,8 @@
 
 import { initializeApp } from "firebase/app";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import { getMessaging, onMessage } from "firebase/messaging";
 
 
 const firebaseConfig = {
@@ -12,6 +14,12 @@ const firebaseConfig = {
   appId: "1:362493366243:web:4c43963222fbba7d9d5ad6"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+const messaging = getMessaging(app);
+
+export { auth, provider, db, messaging, firestore };
