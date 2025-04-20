@@ -22,7 +22,7 @@ export const requestPermission = async (userSteps, goal, rank) => {
   try {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
-      const token = await getToken(messaging, { vapidKey: "BJitggMW5rHGcJ4IBY7k728e4XlpzHJLw8FA4hrW63-Zo0SrU4ajZd3E5Zr2RfAShNc_6DXi5K40i7fPIuj8kZk" });
+      const token = await getToken(messaging, { vapidKey: "YOUR_PUBLIC_VAPID_KEY" });
       console.log("FCM Token:", token);
       if (token) {
         // Gửi token và thông tin lên server

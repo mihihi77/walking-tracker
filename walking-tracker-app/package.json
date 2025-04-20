@@ -4,13 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "server": "node server.js",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
+    "express": "^4.21.2",
     "firebase": "^11.4.0",
+    "firebase-admin": "^13.2.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
