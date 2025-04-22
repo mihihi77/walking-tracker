@@ -1,13 +1,12 @@
 import "./styles/index.css";
 import "./styles/App.css";
 
-// Import các styles riêng của App
 import React from 'react';
 import { Typography, Box, Breadcrumbs, Link } from '@mui/material';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 
-// Import các trang
+import Login from "./pages/LoginPage";
 import Home from './pages/Home';
 import Tracking from './pages/Tracking';
 import Notifications from './pages/Notifications';
@@ -58,7 +57,8 @@ function App() {
           <Route path="/about" element={<About />} /> {/* Trang About */}
           <Route path="/home" element={<Home />} />  {/* Trang Home */}
           <Route path="/tracking" element={<Tracking />} />  
-          <Route path="/notifications" element={<Notifications />} />  
+          <Route path="/notifications" element={<Notifications />} />
+          {/* <Route path="/login" element={<Login />} />  {/* Trang Đăng Nhập */}  */}
         </Routes>
       </main>
     </div>
