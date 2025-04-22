@@ -1,0 +1,48 @@
+/* src/styles/Dashboard.css */
+.dashboard {
+  background-color: #1b1b1b;  /* Màu nền tối */
+  color: white;  /* Màu chữ trắng */
+  display: flex;
+  flex-direction: column;
+  height: 100vh;  /* Chiều cao đầy đủ */
+}
+
+.greeting {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.greeting h1 {
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  background-color: #333;
+  padding: 10px;
+}
+
+.nav-item {
+  background-color: #444;
+  color: white;
+  padding: 15px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item:hover {
+  background-color: #555;
+}
+
+.nav-item svg {
+  font-size: 24px;
+}

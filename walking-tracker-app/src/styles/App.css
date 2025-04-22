@@ -1,0 +1,56 @@
+/* App.css */
+
+/* Reset mặc định cho tất cả các phần tử */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Thiết lập cho body */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  color: #333;
+  height: 100vh;
+}
+
+/* Các phần tử trong app */
+.main-content {
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Điều chỉnh cho các màn hình nhỏ */
+@media (max-width: 600px) {
+  .main-content {
+    padding: 10px;  /* Giảm padding trên màn hình nhỏ */
+  }
+
+  .card {
+    margin: 5px; /* Giảm margin để không chiếm quá nhiều không gian */
+  }
+
+  .navbar {
+    padding: 5px;  /* Giảm padding cho navbar trên màn hình nhỏ */
+  }
+
+  .navbar a {
+    font-size: 14px; /* Giảm kích thước chữ cho các link trong navbar */
+  }
+}
+
+/* Điều chỉnh cho các màn hình lớn hơn 600px */
+@media (min-width: 600px) {
+  .main-content {
+    padding: 20px;
+  }
+
+  .card {
+    margin: 10px;
+  }
+}
