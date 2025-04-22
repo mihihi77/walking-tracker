@@ -22,4 +22,4 @@ const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
 const messaging = getMessaging(app);
 
-export { app, auth, provider, db, messaging, firestore };
+export { app, auth, googleProvider, db, messaging, firestore };
