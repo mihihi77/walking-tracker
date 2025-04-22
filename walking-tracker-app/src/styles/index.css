@@ -3,3 +3,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+    .primary-btn {
+        @apply bg-primary text-white font-bold py-4 px-4 rounded-lg hover:!scale-110 duration-300;
+    }
+}
+
+@layer utilities {
+    .drop-shadow {
+        filter: drop-shadow(-6px 8px 15px rgba(0, 0, 0, 0.25));
+    }
+}

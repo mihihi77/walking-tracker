@@ -1,13 +1,13 @@
-// src/main.jsx
-
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './styles/index.css';
-import TestLogin from './TestLogin'; // Đảm bảo đường dẫn chính xác
+import App from './App';
+import { BrowserRouter } from 'react-router-dom';
+import "./styles/index.css";  
 
-// Render TestLogin thay vì App
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <TestLogin />  {/* Thay thế App bằng TestLogin để thử nghiệm */}
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
   </React.StrictMode>
 );

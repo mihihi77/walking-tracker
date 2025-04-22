@@ -41,7 +41,7 @@ const MyBreadcrumbs = () => {
 
 function App() {
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-white text-black">
       <Navbar />
       <main className="p-4">
         {/* Hiển thị Breadcrumbs (Đường dẫn trang) */}
