@@ -1,8 +1,51 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { db } from "../firebase"; // Import your firebase configuration
+import { doc, getDoc } from "firebase/firestore";
+import { auth } from "../firebase"; // Import your firebase configuration
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 
 const Login = () => {
   const [formType, setFormType] = useState("login"); 
   const [passwordVisible, setPasswordVisible] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleSignUp = async (e) => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("User signed up:", user);
+        redirectUser(user);
+      })
+      .catch((error) => {
+        console.error("Error signing up:", error.message);
+      });
+  };
+
+  const handleLogin = async (e) => {
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("User logged in:", user);
+        redirectUser(user);
+      })
+      .catch((error) => {
+        console.error("Error logging in:", error.message);
+      });
+  }
+
+  const redirectUser = async (user) => {
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+    if (userDoc.exists()) {
+      navigate("/dashboard");
+    }
+    else {
+      navigate("/userinfo");
+    }
+  };
 
   useEffect(() => {
     const link = document.createElement("link");
