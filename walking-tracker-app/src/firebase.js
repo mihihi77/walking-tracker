@@ -14,22 +14,12 @@ const firebaseConfig = {
   appId: "1:362493366243:web:4c43963222fbba7d9d5ad6"
 };
 
-<<<<<<< HEAD
 
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const provider = new GoogleAuthProvider();
-const messaging = getMessaging(app);
-
-export { auth, provider, db, messaging, firestore };
-=======
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const messaging = getMessaging(app);
 
-export { app, db, auth, googleProvider, messaging };
->>>>>>> giaan
+export { app, auth, provider, db, messaging, firestore };
