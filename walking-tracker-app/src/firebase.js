@@ -1,6 +1,7 @@
 
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider, FacebookAuthProvider, GithubAuthProvider } from "firebase/auth";
 
 
 const firebaseConfig = {
@@ -15,3 +16,10 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const firestore = getFirestore(app);
+const db = getFirestore(app);
+const auth = getAuth(app); // Nếu bạn sử dụng Firebase Authentication
+const googleProvider = new GoogleAuthProvider(); // Nếu bạn sử dụng Google Authentication
+const facebookProvider = new FacebookAuthProvider(); // Nếu bạn sử dụng Facebook Authentication
+const githubProvider = new GithubAuthProvider(); // Nếu bạn sử dụng Github Authentication
+
+export { db, auth, googleProvider, facebookProvider, githubProvider };
