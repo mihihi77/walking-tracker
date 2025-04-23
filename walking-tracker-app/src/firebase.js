@@ -21,5 +21,6 @@ const auth = getAuth(app); // Nếu bạn sử dụng Firebase Authentication
 const googleProvider = new GoogleAuthProvider(); // Nếu bạn sử dụng Google Authentication
 const facebookProvider = new FacebookAuthProvider(); // Nếu bạn sử dụng Facebook Authentication
 const githubProvider = new GithubAuthProvider(); // Nếu bạn sử dụng Github Authentication
+const provider = new GoogleAuthProvider(); // Nếu bạn sử dụng Google Authentication
 
-export { db, auth, googleProvider, facebookProvider, githubProvider };
+export { db, auth, googleProvider, facebookProvider, githubProvider, provider, firestore };
