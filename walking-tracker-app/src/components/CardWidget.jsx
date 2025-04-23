@@ -14,7 +14,7 @@ const CardWidget = ({ title, value, icon }) => {
       minWidth: 200,
       maxWidth: 400,
       marginLeft: '12px',
-      backgroundColor: '#f1f1f1',
+      backgroundColor: '#ffffff',
       padding: '15px',
       borderRadius: '7px',
       boxShadow: '0 3px 6px rgba(0, 0, 0, 0.2)',
@@ -26,7 +26,7 @@ const CardWidget = ({ title, value, icon }) => {
         <Typography variant="h5" component="div">
           {value}
         </Typography>
-        <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>
+        <Typography sx={{ color: 'text.primary', mb: 1.5 }}>
           {icon}
         </Typography>
       </CardContent>

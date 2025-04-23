@@ -8,10 +8,11 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 
 // Import các trang
-import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
 import Tracking from './pages/Tracking';
 import Notifications from './pages/Notifications';
 import About from './pages/About';  // Trang About sẽ là trang chủ
+
 
 const MyBreadcrumbs = () => {
   const location = useLocation();
@@ -20,17 +21,28 @@ const MyBreadcrumbs = () => {
   if (pathnames.length === 0) {
     pathnames.push('About'); // Khi không có breadcrumb, mặc định sẽ là About
   }
-  
+
+  const breadcrumbStyle = { color: '#ffffff' };  // Inline style for breadcrumb color
+
   return (
-    <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: '16px' }}>
+    <Breadcrumbs
+      aria-label="breadcrumb"
+      sx={{
+        marginBottom: '16px',
+        color: '#ffffff', // Apply default white color to Breadcrumbs
+        '& .MuiBreadcrumbs-separator': {
+          color: '#ffffff', // Style the separator
+        },
+      }}
+    >
       {/* Dẫn đến About khi bấm vào "Pages" */}
-      <Link color="inherit" href="/about">
+      <Link to="/about" style={breadcrumbStyle}>
         Pages
       </Link>
       {pathnames.map((value, index) => {
         const to = `/${pathnames.slice(0, index + 1).join('/')}`;
         return (
-          <Link key={to} color="inherit" href={to}>
+          <Link key={to} to={to} style={breadcrumbStyle}>
             {value.charAt(0).toUpperCase() + value.slice(1)}
           </Link>
         );
@@ -39,11 +51,12 @@ const MyBreadcrumbs = () => {
   );
 };
 
+
 function App() {
   return (
-    <div className="min-h-screen bg-white text-black">
+    <div className=" min-h-screen text-white" style={{ backgroundColor: '#000000' }}>
       <Navbar />
-      <main className="p-4">
+      <main className="p-4" style={{ paddingTop: '70px' }}> {/* Thêm khoảng cách giữa navbar và nội dung */}
         {/* Hiển thị Breadcrumbs (Đường dẫn trang) */}
         <MyBreadcrumbs />
         
@@ -56,7 +69,7 @@ function App() {
         <Routes>
           <Route path="/" element={<About />} />   {/* Trang About là trang chủ */}
           <Route path="/about" element={<About />} /> {/* Trang About */}
-          <Route path="/home" element={<Home />} />  {/* Trang Home */}
+          <Route path="/Dashboard" element={<Dashboard />} />  {/* Trang Home */}
           <Route path="/tracking" element={<Tracking />} />  
           <Route path="/notifications" element={<Notifications />} />  
         </Routes>
