@@ -21,8 +21,8 @@ const Activities = () => {
       {
         label: 'Last Week Burned Calories',
         data: [1200, 1300, 1250, 1100, 1400, 1350, 1450],
-        backgroundColor: 'rgba(13, 71, 161, 0.8)',  // #0d47a1 + độ mờ
-        borderColor: 'rgba(13, 71, 161, 1)',        // #0d47a1 full màu
+        backgroundColor: 'rgba(29, 185, 84, 0.8)',  // #0d47a1 + độ mờ
+        borderColor: 'rgba(29, 185, 84, 0.8)',        // #0d47a1 full màu
         borderWidth: 1
       }
     ]
@@ -56,7 +56,7 @@ const Activities = () => {
   };
 
   return (
-    <div className="bg-gray-900 p-6 rounded-lg shadow-lg w-full md:w-2/3 mx-auto">
+    <div className="p-6 rounded-lg shadow-lg w-full md:w-2/3 mx-auto" style={{ backgroundColor: '#121212' }}>
       <div className="h-48 w-full">
         <Bar data={data} options={options} />
       </div>

@@ -13,7 +13,7 @@ const Hero = () => {
                 WalkMate Track your Progress{" "}
                 <span className="text-primary">Easily</span>
               </h1>
-              <p className="text-gray-600 xl:max-w-[500px]">
+              <p className="text-white-600 xl:max-w-[500px] leading-relaxed">
                 The point of using WalkMate is to improve your overall health by tracking your walking habits, staying motivated, and achieving your fitness goals.
               </p>
               <div className="flex justify-center items-center gap-8 md:justify-start !mt-4">
@@ -25,11 +25,11 @@ const Hero = () => {
             </div>
          </div>
          <div className="flex justify-center items-center">
-          <img 
+          {/*<img 
             src={HeroImg} 
-            alt="" 
-            className="w-[350px] md:w-[550px] xl:w-[700px]"
-          />
+            alt="Hero" 
+            className="w-[350px] md:w-[550px] xl:w-[500px] max-w-full"
+          /> */}
          </div>
        </div>
      </section>

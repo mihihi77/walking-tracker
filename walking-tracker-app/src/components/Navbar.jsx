@@ -14,8 +14,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 
-const pages = ['About', 'Home', 'Tracking', 'Notifications'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ['About', 'Dashboard', 'Tracking', 'Notifications'];
+const settings = ['Profile','Logout'];
 
 function Navbar() {
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ function Navbar() {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#0D47A1' }}>
+    <AppBar position="fixed" sx={{ backgroundColor: '#121212', top: 0, left: 0, right: 0, zIndex: 1300 }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* Desktop icon + title */}
@@ -76,15 +76,14 @@ function Navbar() {
             >
               {pages.map((page) => (
                 <MenuItem
-                key={page}
-                onClick={() => {
-                  navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
-                  handleCloseNavMenu();
-                }}
-              >
-                <Typography textAlign="center">{page}</Typography>
-              </MenuItem>
-              
+                  key={page}
+                  onClick={() => {
+                    navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
+                    handleCloseNavMenu();
+                  }}
+                >
+                  <Typography textAlign="center">{page}</Typography>
+                </MenuItem>
               ))}
             </Menu>
           </Box>
@@ -114,15 +113,15 @@ function Navbar() {
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
             {pages.map((page) => (
               <Button
-              key={page}
-              onClick={() => {
-                navigate(`/${page.toLowerCase() === 'aboutabout' ? '' : page.toLowerCase()}`);
-                handleCloseNavMenu();
-              }}
-              sx={{ my: 2, color: 'white', display: 'block' }}
-            >
-              {page}
-            </Button>            
+                key={page}
+                onClick={() => {
+                  navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
+                  handleCloseNavMenu();
+                }}
+                sx={{ my: 2, color: 'white', display: 'block' }}
+              >
+                {page}
+              </Button>
             ))}
           </Box>
 
