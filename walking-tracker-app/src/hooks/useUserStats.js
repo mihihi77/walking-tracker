@@ -17,18 +17,26 @@ const useUserStats = (userId) => {
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
       let totalCalories = 0;
       let totalDistance = 0;
+      let todayCalories = 0;
+      let todayDistance = 0;
       let daysSet = new Set();
       const oneWeekAgo = new Date();
       oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        const date = data.createdAt?.toDate ? data.createdAt.toDate() : new Date(); // Fix trường hợp null
-
+        const date = data.createdAt?.toDate?.() || new Date();
+        const isToday = new Date().toDateString() === date.toDateString();
+      
         if (date >= oneWeekAgo) {
           totalCalories += data.calories;
           totalDistance += data.distance;
           daysSet.add(date.toDateString());
+        }
+      
+        if (isToday) {
+          todayCalories += data.calories;
+          todayDistance += data.distance;
         }
       });
 
@@ -37,6 +45,8 @@ const useUserStats = (userId) => {
         steps: Math.floor(totalDistance * 1312), // 1km ≈ 1312 bước
         activeDays: daysSet.size,
         distance: totalDistance.toFixed(2), // Nếu muốn hiện km
+        todayCalories: Math.floor(todayCalories),
+        todayDistance: todayDistance.toFixed(2),
       });
     });
 

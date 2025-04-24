@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
@@ -10,47 +10,94 @@ import {
   Legend
 } from 'chart.js';
 
-// Đăng ký các thành phần cần thiết của Chart.js
+import { collection, query, onSnapshot } from 'firebase/firestore';
+import { db } from '../firebase';
+
+// Đăng ký các thành phần ChartJS
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const Activities = () => {
-  // Dữ liệu biểu đồ
+const Activities = ({ userId }) => {
+  const [activityData, setActivityData] = useState([]);
+
+  useEffect(() => {
+    if (!userId) return;
+  
+    const q = query(collection(db, "users", userId, "activities"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const distanceMap = new Map(); // key: 'dd/mm/yyyy', value: totalDistance
+  
+      querySnapshot.forEach((doc) => {
+        const d = doc.data();
+        if (d.createdAt && typeof d.distance === 'number') {
+          const date = d.createdAt.toDate();
+          const dateKey = date.toLocaleDateString('en-GB'); // 'dd/mm/yyyy'
+  
+          const prev = distanceMap.get(dateKey) || 0;
+          distanceMap.set(dateKey, prev + d.distance);
+        }
+      });
+  
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 6);
+  
+      // Convert to sorted array
+      const aggregated = Array.from(distanceMap.entries())
+        .map(([dateStr, total]) => {
+          const [day, month, year] = dateStr.split('/');
+          return {
+            date: new Date(`${year}-${month}-${day}`),
+            label: dateStr,
+            distance: total
+          };
+        })
+        .filter(entry => entry.date >= oneWeekAgo)
+        .sort((a, b) => a.date - b.date);
+  
+      setActivityData(aggregated);
+    });
+  
+    return () => unsubscribe();
+  }, [userId]);
+
+  if (activityData.length === 0) return null;
+
+  const chartLabels = activityData.map(item => item.date.toLocaleDateString('en-GB')); // dd/mm/yyyy
+  const distanceData = activityData.map(item => 
+    item.distance != null ? parseFloat(item.distance.toFixed(2)) : 0
+  );
+
   const data = {
-    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    labels: chartLabels,
     datasets: [
       {
-        label: 'Last Week Burned Calories',
-        data: [1200, 1300, 1250, 1100, 1400, 1350, 1450],
-        backgroundColor: 'rgba(29, 185, 84, 0.8)',  // #0d47a1 + độ mờ
-        borderColor: 'rgba(29, 185, 84, 0.8)',        // #0d47a1 full màu
+        label: 'Distance (km)',
+        data: distanceData,
+        backgroundColor: 'rgba(29, 185, 84, 0.8)',
+        borderColor: 'rgba(29, 185, 84, 0.8)',
         borderWidth: 1
       }
     ]
   };
 
-  // Tùy chỉnh biểu đồ
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     scales: {
       x: {
-        grid: {
-          display: false // Tắt grid trục X
-        }
+        grid: { display: false }
       },
       y: {
         beginAtZero: true,
-        ticks: {
-          stepSize: 250
-        },
-        grid: {
-          display: false // Tắt grid trục Y
-        }
+        ticks: { stepSize: 0.5 },
+        grid: { display: false }
       }
     },
     plugins: {
-      legend: {
-        display: false
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.raw} km`
+        }
       }
     }
   };

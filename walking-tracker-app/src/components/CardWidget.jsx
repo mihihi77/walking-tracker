@@ -8,7 +8,8 @@ import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 
 // CardWidget Component
-const CardWidget = ({ title, value, icon }) => {
+const CardWidget = ({ title, value, icon, color = "green" }) => {
+  const backgroundColor = color === "green" ? 'rgba(29, 185, 84, 0.8)'  : '#333'; // Change color based on prop
   return (
     <Card sx={{
       minWidth: 200,
@@ -30,9 +31,9 @@ const CardWidget = ({ title, value, icon }) => {
           {icon}
         </Typography>
       </CardContent>
-      <CardActions>
+      {/* <CardActions>
         <Button size="small">Learn More</Button>
-      </CardActions>
+      </CardActions> */}
     </Card>
   );
 };
