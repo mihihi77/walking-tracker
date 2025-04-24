@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 
 const pages = ['About', 'Dashboard', 'Tracking', 'Notifications'];
-const settings = ['Profile','Logout'];
+const settings = ['Profile', 'Logout'];
 
 function Navbar() {
   const navigate = useNavigate();
@@ -35,6 +35,12 @@ function Navbar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    // Xử lý logic logout tại đây (ví dụ: xóa token, clear local storage)
+    handleCloseUserMenu();
+    navigate('/login'); // Chuyển hướng đến trang đăng nhập sau khi logout (ví dụ)
   };
 
   return (
@@ -142,7 +148,13 @@ function Navbar() {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                  {setting === 'Profile' ? (
+                    <Link to="/setup" style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <Typography textAlign="center">{setting}</Typography>
+                    </Link>
+                  ) : (
+                    <Typography textAlign="center" onClick={handleLogout}>{setting}</Typography>
+                  )}
                 </MenuItem>
               ))}
             </Menu>

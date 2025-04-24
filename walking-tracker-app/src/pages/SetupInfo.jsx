@@ -1,11 +1,11 @@
-// SetupInfo.js
-import React, { useState } from 'react';
+// ProfilePage.js
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-const Setup = ({ onSetupComplete }) => { // Nhận callback
-  const [setupInfo, setSetupInfo] = useState({
+const Setup = () => {
+  const [profileInfo, setProfileInfo] = useState({
     name: '',
     height: '',
     weight: '',
@@ -13,33 +13,52 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
     goalSteps: '',
   });
   const navigate = useNavigate();
+  const user = auth.currentUser;
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (user) {
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setProfileInfo({
+            name: userData.displayName || '',
+            height: userData.height || '',
+            weight: userData.weight || '',
+            activityLevel: userData.activityLevel || 'low',
+            goalSteps: userData.goalSteps || '',
+          });
+        }
+      }
+    };
+
+    fetchProfileData();
+  }, [user]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setSetupInfo({ ...setupInfo, [name]: value });
+    setProfileInfo({ ...profileInfo, [name]: value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = auth.currentUser;
     if (!user) return;
 
     const userData = {
-      displayName: setupInfo.name,
-      height: parseFloat(setupInfo.height),
-      weight: parseFloat(setupInfo.weight),
-      activityLevel: setupInfo.activityLevel,
-      goalSteps: parseInt(setupInfo.goalSteps),
-      dailyCalories: calculateCalories(parseFloat(setupInfo.weight), setupInfo.activityLevel),
+      displayName: profileInfo.name,
+      height: parseFloat(profileInfo.height),
+      weight: parseFloat(profileInfo.weight),
+      activityLevel: profileInfo.activityLevel,
+      goalSteps: parseInt(profileInfo.goalSteps),
+      dailyCalories: calculateCalories(parseFloat(profileInfo.weight), profileInfo.activityLevel),
     };
 
     try {
-      await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
+      await setDoc(doc(db, 'users', user.uid), userData, { merge: true }); // Sử dụng merge: true để cập nhật dữ liệu hiện có
       localStorage.setItem('userInfo', JSON.stringify(userData));
-      onSetupComplete(user); // Gọi callback ở đây, truyền user
       navigate('/about');
     } catch (error) {
-      console.error('Error saving setup data:', error);
+      console.error('Error updating profile data:', error);
     }
   };
 
@@ -51,7 +70,7 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
   return (
     <div className="min-h-screen flex items-center justify-center py-10">
       <div className="bg-[#121212] shadow-md rounded-lg p-8 w-full max-w-md">
-        <h2 className="text-xl font-bold text-white-800 mb-6">Setup Information</h2>
+        <h2 className="text-xl font-bold text-white-800 mb-6">Profile</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block text-white-700 text-sm font-bold mb-2">
@@ -61,9 +80,8 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
               type="text"
               id="name"
               name="name"
-              value={setupInfo.name}
+              value={profileInfo.name}
               onChange={handleChange}
-              required
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
             />
           </div>
@@ -75,9 +93,8 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
               type="number"
               id="height"
               name="height"
-              value={setupInfo.height}
+              value={profileInfo.height}
               onChange={handleChange}
-              required
               className="shadow appearance-none border rounded w-full py-2 px-3 text-white-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
             />
           </div>
@@ -89,9 +106,8 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
               type="number"
               id="weight"
               name="weight"
-              value={setupInfo.weight}
+              value={profileInfo.weight}
               onChange={handleChange}
-              required
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
             />
           </div>
@@ -102,7 +118,7 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
             <select
               id="activityLevel"
               name="activityLevel"
-              value={setupInfo.activityLevel}
+              value={profileInfo.activityLevel}
               onChange={handleChange}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
             >
@@ -119,9 +135,8 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
               type="number"
               id="goalSteps"
               name="goalSteps"
-              value={setupInfo.goalSteps}
+              value={profileInfo.goalSteps}
               onChange={handleChange}
-              required
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
             />
           </div>
@@ -129,7 +144,7 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
             type="submit"
             className="bg-[#12a245] hover:bg-[#15d85a] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
           >
-            Save and Continue
+            Update Information
           </button>
         </form>
       </div>
