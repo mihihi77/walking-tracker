@@ -1,11 +1,21 @@
-// LoginPage.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCubes } from '@fortawesome/free-solid-svg-icons';
+import {
+  doc,
+  getDoc,
+  setDoc
+} from "firebase/firestore";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  getRedirectResult,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCubes } from "@fortawesome/free-solid-svg-icons";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -13,6 +23,50 @@ const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const [redirectPath, setRedirectPath] = useState(null);
+
+  useEffect(() => {
+    const checkRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result && result.user) {
+          await handleUserRedirect(result.user);
+        }
+      } catch (err) {
+        console.error("Redirect error:", err);
+      }
+    };
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user && !localStorage.getItem("userLoggedIn")) {
+        await handleUserRedirect(user);
+      }
+    });
+
+    checkRedirectResult();
+
+    return () => unsubscribe();
+  }, [navigate]);
+
+  const handleUserRedirect = async (user) => {
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    localStorage.setItem("userLoggedIn", true);
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      if (userData && userData.goalSteps) {
+        setRedirectPath("/about");
+      } else {
+        setRedirectPath("/setup");
+      }
+    } else {
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        createdAt: new Date(),
+      });
+      // localStorage.setItem("userLoggedIn", true);
+      setRedirectPath("/setup");
+    }
+  };
 
   const handleAuth = async (e) => {
     e.preventDefault();
@@ -33,7 +87,7 @@ const LoginPage = () => {
         });
         localStorage.setItem("userLoggedIn", true);
         localStorage.setItem("justRegistered", "true");
-        navigate("/setup");
+        setRedirectPath("/setup");
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -43,12 +97,12 @@ const LoginPage = () => {
           localStorage.setItem("userLoggedIn", true);
           const userData = userDoc.data();
           if (userData && userData.goalSteps) {
-            navigate("/about");
+            setRedirectPath("/about");
           } else {
-            navigate("/setup");
+            setRedirectPath("/setup");
           }
         } else {
-          navigate("/setup");
+          setRedirectPath("/setup");
         }
       }
     } catch (error) {
@@ -58,36 +112,23 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-
-      if (userDoc.exists()) {
-        localStorage.setItem("userLoggedIn", true);
-        const userData = userDoc.data();
-        if (userData && userData.goalSteps) {
-          navigate("/about");
-        } else {
-          navigate("/setup");
-        }
-      } else {
-        await setDoc(doc(db, "users", user.uid), {
-          email: user.email,
-          createdAt: new Date(),
-        });
-        localStorage.setItem("userLoggedIn", true);
-        navigate("/setup");
-      }
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       setError(error.message);
-      console.error("Google Login Error:", error);
+      console.error("Google Redirect Error:", error);
     }
   };
 
+  useEffect(() => {
+    if (redirectPath) {
+      navigate(redirectPath);
+    }
+  }, [redirectPath, navigate]);
+
   return (
-    <div className="flex justify-center items-center min-h-screen ">
+    <div className="flex justify-center items-center min-h-screen">
       <div className="bg-[#171717] rounded-lg shadow-md overflow-hidden max-w-2xl w-full text-white">
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="hidden md:block">
@@ -108,7 +149,7 @@ const LoginPage = () => {
             {error && <p className="text-red-500 font-bold mb-2">{error}</p>}
             <form onSubmit={handleAuth}>
               <div className="mb-4">
-                <label htmlFor="email" className="block font-bold text-[#ffffff] text-sm mb-2">
+                <label htmlFor="email" className="block font-bold text-white text-sm mb-2">
                   Email Address
                 </label>
                 <input
@@ -121,7 +162,7 @@ const LoginPage = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="password" className="block font-bold text-[#ffffff] text-sm mb-2">
+                <label htmlFor="password" className="block font-bold text-white text-sm mb-2">
                   Password
                 </label>
                 <input
@@ -175,12 +216,8 @@ const LoginPage = () => {
               Sign In with Google
             </button>
             <div className="mt-4 text-center text-gray-500 text-xs">
-              <a href="#!" className="mr-2 hover:text-[#12a245]">
-                Terms of use
-              </a>
-              <a href="#!" className="hover:text-[#12a245]">
-                Privacy policy
-              </a>
+              <a href="#!" className="mr-2 hover:text-[#12a245]">Terms of use</a>
+              <a href="#!" className="hover:text-[#12a245]">Privacy policy</a>
             </div>
           </div>
         </div>
