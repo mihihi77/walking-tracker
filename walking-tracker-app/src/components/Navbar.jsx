@@ -149,8 +149,8 @@ function Navbar() {
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   {setting === 'Profile' ? (
-                    <Link to="/setup" style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <Typography textAlign="center">{setting}</Typography>
+                    <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography textAlign="center">{setting}</Typography>
                     </Link>
                   ) : (
                     <Typography textAlign="center" onClick={handleLogout}>{setting}</Typography>

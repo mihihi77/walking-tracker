@@ -23,7 +23,6 @@ const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [redirectPath, setRedirectPath] = useState(null);
 
   useEffect(() => {
     const checkRedirectResult = async () => {
@@ -38,7 +37,7 @@ const LoginPage = () => {
     };
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user && !localStorage.getItem("userLoggedIn")) {
+      if (user) {
         await handleUserRedirect(user);
       }
     });
@@ -50,21 +49,19 @@ const LoginPage = () => {
 
   const handleUserRedirect = async (user) => {
     const userDoc = await getDoc(doc(db, "users", user.uid));
-    localStorage.setItem("userLoggedIn", true);
     if (userDoc.exists()) {
       const userData = userDoc.data();
       if (userData && userData.goalSteps) {
-        setRedirectPath("/about");
+        navigate("/about");
       } else {
-        setRedirectPath("/setup");
+        navigate("/setup");
       }
     } else {
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         createdAt: new Date(),
       });
-      // localStorage.setItem("userLoggedIn", true);
-      setRedirectPath("/setup");
+      navigate("/setup");
     }
   };
 
@@ -78,32 +75,19 @@ const LoginPage = () => {
     }
 
     try {
+      let userCredential;
       if (isSignUp) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         await setDoc(doc(db, "users", user.uid), {
           email: user.email,
           createdAt: new Date(),
         });
-        localStorage.setItem("userLoggedIn", true);
-        localStorage.setItem("justRegistered", "true");
-        setRedirectPath("/setup");
+        navigate("/setup"); // Sau signup luôn chuyển đến setup
       } else {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-
-        if (userDoc.exists()) {
-          localStorage.setItem("userLoggedIn", true);
-          const userData = userDoc.data();
-          if (userData && userData.goalSteps) {
-            setRedirectPath("/about");
-          } else {
-            setRedirectPath("/setup");
-          }
-        } else {
-          setRedirectPath("/setup");
-        }
+        await handleUserRedirect(user); // Gọi handleUserRedirect sau khi đăng nhập
       }
     } catch (error) {
       setError(error.message);
@@ -120,12 +104,6 @@ const LoginPage = () => {
       console.error("Google Redirect Error:", error);
     }
   };
-
-  useEffect(() => {
-    if (redirectPath) {
-      navigate(redirectPath);
-    }
-  }, [redirectPath, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen">
