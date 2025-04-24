@@ -275,6 +275,36 @@ const Tracking = () => {
     }
   };
 
+  const mapOptions = {
+    styles: [
+      {
+        featureType: "road",
+        elementType: "geometry",
+        stylers: [{ color: "#ffffff" }]
+      },
+      {
+        featureType: "road",
+        elementType: "labels",
+        stylers: [{ visibility: "simplified" }]
+      },
+      {
+        featureType: "poi",
+        stylers: [{ visibility: "off" }]
+      },
+      {
+        featureType: "transit",
+        stylers: [{ visibility: "off" }]
+      },
+      {
+        featureType: "water",
+        stylers: [{ color: "#a0d6d1" }]
+      }
+    ],
+    disableDefaultUI: true,
+    zoomControl: true,
+  };
+  
+
   return (
     <div>
       <h2>Run Tracker</h2>
@@ -287,7 +317,9 @@ const Tracking = () => {
           onLoad={(map) => (mapRef.current = map)}
         >
           {route.length > 0 && <Marker position={route[route.length - 1]} />}
-          {route.length > 1 && <Polyline path={route} options={{ strokeColor: "red" }} />}
+          {route.length > 1 && <Polyline path={route} options={{ strokeColor: "red",
+          strokeOpacity: 0.8, strokeWeight: 5
+           }} />}
         </GoogleMap>
       </LoadScript>
 
