@@ -78,7 +78,7 @@ const Setup = ({ onSetupComplete }) => { // Nhận callback
               value={setupInfo.height}
               onChange={handleChange}
               required
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-white-700 leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-black leading-tight focus:outline-none focus:shadow-outline focus:border-blue-500"
             />
           </div>
           <div>
