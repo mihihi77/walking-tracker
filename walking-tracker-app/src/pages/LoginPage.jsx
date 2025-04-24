@@ -1,8 +1,9 @@
+// LoginPage.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCubes } from '@fortawesome/free-solid-svg-icons';
 
@@ -34,26 +35,22 @@ const LoginPage = () => {
         localStorage.setItem("justRegistered", "true");
         navigate("/setup");
       } else {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        const userDoc = await getDoc(doc(db, "users", user.uid));
 
-        if (userDoc.exists()) {
-          localStorage.setItem("userLoggedIn", true);
-          const userData = userDoc.data();
-          // Kiểm tra một trường cụ thể trong dữ liệu người dùng để xác định
-          // xem họ đã hoàn thành thiết lập hay chưa.
-          // Ví dụ: kiểm tra xem trường 'goalSteps' có tồn tại hay không,
-          // vì bạn đang lưu nó khi thiết lập.
-          if (userData && userData.goalSteps) {
-            navigate("/about");
-          } else {
-            navigate("/setup");
-          }
-        } else {
-          navigate("/setup");
-        }
-      }
+        if (userDoc.exists()) {
+          localStorage.setItem("userLoggedIn", true);
+          const userData = userDoc.data();
+          if (userData && userData.goalSteps) {
+            navigate("/about");
+          } else {
+            navigate("/setup");
+          }
+        } else {
+          navigate("/setup");
+        }
+      }
     } catch (error) {
       setError(error.message);
       console.error("Authentication Error:", error);
@@ -69,8 +66,8 @@ const LoginPage = () => {
 
       if (userDoc.exists()) {
         localStorage.setItem("userLoggedIn", true);
-        const userInfo = localStorage.getItem("userInfo");
-        if (userInfo) {
+        const userData = userDoc.data();
+        if (userData && userData.goalSteps) {
           navigate("/about");
         } else {
           navigate("/setup");

@@ -1,3 +1,4 @@
+// App.js
 import "./styles/index.css";
 import "./styles/App.css";
 
@@ -6,7 +7,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Typography, Box, Breadcrumbs, Link } from '@mui/material';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import { auth } from './firebase';  // Import từ Firebase
+import { auth, db } from './firebase';  // Import từ Firebase
+import { doc, getDoc } from 'firebase/firestore';
 
 // Import các trang
 import Dashboard from './pages/Dashboard';
@@ -57,30 +59,27 @@ function App() {
   const [user, setUser] = useState(null);
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false);
 
-  const checkSetupCompletion = useCallback(() => {
-    const userInfo = localStorage.getItem("userInfo");
-    setIsUserSetupComplete(!!userInfo);
+  const checkSetupCompletion = useCallback(async (currentUser) => {
+    if (currentUser) {
+      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setIsUserSetupComplete(!!userData.goalSteps);
+      } else {
+        setIsUserSetupComplete(false);
+      }
+    } else {
+      setIsUserSetupComplete(false);
+    }
   }, []);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      setUser(user);
-      if (user) {
-        // Kiểm tra thông tin người dùng từ Firestore
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          // Kiểm tra một trường cụ thể để xác định thiết lập hoàn tất
-          setIsUserSetupComplete(!!userData.goalSteps); // Ví dụ: kiểm tra goalSteps
-        } else {
-          setIsUserSetupComplete(false); // Nếu không có dữ liệu, coi như chưa setup
-        }
-      } else {
-        setIsUserSetupComplete(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      setUser(user);
+      await checkSetupCompletion(user); // Gọi hàm kiểm tra khi trạng thái đăng nhập thay đổi
+    });
+    return () => unsubscribe();
+  }, [checkSetupCompletion]);
 
   const handleLogout = () => {
     auth.signOut().then(() => {

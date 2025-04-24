@@ -1,9 +1,10 @@
+// SetupInfo.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
-const Setup = ({ onSetupComplete }) => { // Receive the callback
+const Setup = ({ onSetupComplete }) => { // Nhận callback
   const [setupInfo, setSetupInfo] = useState({
     name: '',
     height: '',
@@ -35,7 +36,7 @@ const Setup = ({ onSetupComplete }) => { // Receive the callback
     try {
       await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
       localStorage.setItem('userInfo', JSON.stringify(userData));
-      onSetupComplete(); // Call the callback to update the state in App
+      onSetupComplete(user); // Gọi callback ở đây, truyền user
       navigate('/about');
     } catch (error) {
       console.error('Error saving setup data:', error);
