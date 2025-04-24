@@ -1,63 +1,77 @@
-import '../styles/CardWidget.css';  // Import CSS nếu cần thiết
-import React from 'react';
-import { Box, Typography, Grid, Container } from '@mui/material'; // Import Typography, Grid và Container từ MUI
-import CardWidget from '../components/CardWidget';  // Đảm bảo đường dẫn đúng với CardWidget
-import Activities from '../components/ActivitiesWidget'; // Đảm bảo đường dẫn đúng
+import React, { useEffect, useState } from 'react';
+import { Box, Typography, Grid, Container } from '@mui/material';
+import CardWidget from '../components/CardWidget';
+import Activities from '../components/ActivitiesWidget';
+import useUserStats from '../hooks/useUserStats';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 const Dashboard = () => {
+  const [userId, setUserId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const auth = getAuth();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        setUserId(null);
+      }
+      setLoading(false);
+    });
+
+    // Cleanup để tránh memory leak
+    return () => unsubscribe();
+  }, [auth]);
+
+  const { calories, steps, activeDays, weeklyCalories, weeklySteps } = useUserStats(userId);
+
+  if (loading) {
+    return <Typography variant="h6">Loading...</Typography>;
+  }
+
+  if (!userId) {
+    return <Typography variant="h6">Please log in to view your dashboard.</Typography>;
+  }
+
   return (
     <Container maxWidth="lg" sx={{ padding: '0px' }}>
-      {/* Tiêu đề "Main Dashboard" */}
-      
-
       {/* Target Section */}
       <Box sx={{ marginBottom: '40px' }}>
         <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '20px' }}>Target</Typography>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={4}> {/* Điều chỉnh để thích ứng với các màn hình lớn */}
-            <CardWidget title="Calories Burned" value="3,000" icon="🔥" />
+          <Grid item xs={12} sm={6} md={4}>
+            <CardWidget title="Calories Burned" value={calories.toLocaleString()} icon="🔥" />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <CardWidget title="Steps Walked" value="12,345" icon="👟" />
-          </Grid>
-        </Grid>
-      </Box>
-
-      {/* Yesterday Section */}
-      <Box sx={{ marginBottom: '40px' }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '20px' }}>Yesterday</Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6} md={4}>
-            <CardWidget title="Calories Burned" value="2,800" icon="🔥" />
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <CardWidget title="Steps Walked" value="11,234" icon="👟" />
+            <CardWidget title="Steps Walked" value={steps.toLocaleString()} icon="👟" />
           </Grid>
         </Grid>
       </Box>
 
       {/* Last Week Section */}
-<Box>
-  <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '20px' }}>Last Week</Typography>
+      <Box>
+        <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '20px' }}>Last Week</Typography>
 
-  {/* Biểu đồ đặt phía trên */}
-  <Box sx={{ marginBottom: '30px' }}>
-    <Activities />
-  </Box>
+        <Box sx={{ marginBottom: '30px' }}>
+          <Activities userId={userId} />
+        </Box>
 
-  <Grid container spacing={3}>
-    <Grid item xs={12} sm={6} md={4}>
-      <CardWidget title="Calories Burned" value="20,000" icon="🔥" />
-    </Grid>
-    <Grid item xs={12} sm={6} md={4}>
-      <CardWidget title="Steps Walked" value="75,000" icon="👟" />
-    </Grid>
-    <Grid item xs={12} sm={6} md={4}>
-      <CardWidget title="Active Days" value="30" icon="📅" />
-    </Grid>
-  </Grid>
-</Box>
-
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={4}>
+            <CardWidget 
+            title="Calories Burned" 
+            value={(calories ?? 0).toLocaleString()} 
+            icon="🔥" />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <CardWidget title="Steps Walked" value={(steps ?? 0).toLocaleString()} icon="👟" />
+          </Grid>
+          <Grid item xs={12} sm={6} md={4}>
+            <CardWidget title="Active Days" value={(activeDays ?? 0)} icon="📅" />
+          </Grid>
+        </Grid>
+      </Box>
     </Container>
   );
 };
