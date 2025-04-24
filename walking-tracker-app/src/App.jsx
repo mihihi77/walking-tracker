@@ -1,45 +1,42 @@
-// App.js
 import "./styles/index.css";
 import "./styles/App.css";
 
-// Import các styles riêng của App
 import React, { useEffect, useState, useCallback } from "react";
 import { Typography, Box, Breadcrumbs, Link } from '@mui/material';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { auth, db } from './firebase';  // Import từ Firebase
 import { doc, getDoc } from 'firebase/firestore';
 
-// Import các trang
 import Dashboard from './pages/Dashboard';
 import Tracking from './pages/Tracking';
 import Notifications from './pages/Notifications';
 import About from './pages/About';  // Trang About sẽ là trang chủ
-import LoginPage from './pages/LoginPage';  // Trang Login
 import Setup from './pages/SetupInfo';  // Trang Setup
 import Navbar from "./components/Navbar";
+import Login from './pages/LoginPage';
+import Profile from './pages/ProfilePage';
 
 const MyBreadcrumbs = () => {
   const location = useLocation();
   const pathnames = location.pathname.split('/').filter(x => x);
 
   if (pathnames.length === 0) {
-    pathnames.push('About'); // Khi không có breadcrumb, mặc định sẽ là About
+    pathnames.push('About');
   }
 
-  const breadcrumbStyle = { color: '#ffffff' };  // Inline style for breadcrumb color
+  const breadcrumbStyle = { color: '#ffffff' };
 
   return (
     <Breadcrumbs
       aria-label="breadcrumb"
       sx={{
         marginBottom: '-20px',
-        color: '#ffffff', // Apply default white color to Breadcrumbs
+        color: '#ffffff',
         '& .MuiBreadcrumbs-separator': {
-          color: '#ffffff', // Style the separator
+          color: '#ffffff',
         },
       }}
     >
-      {/* Dẫn đến About khi bấm vào "Pages" */}
       <Link to="/about" style={breadcrumbStyle}>
         Pages
       </Link>
@@ -60,23 +57,30 @@ function App() {
   const [isUserSetupComplete, setIsUserSetupComplete] = useState(false);
 
   const checkSetupCompletion = useCallback(async (currentUser) => {
+    console.log("App.js: checkSetupCompletion called with user:", currentUser?.uid);
     if (currentUser) {
       const userDoc = await getDoc(doc(db, "users", currentUser.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setIsUserSetupComplete(!!userData.goalSteps);
+        const setupComplete = !!userData.goalSteps;
+        setIsUserSetupComplete(setupComplete);
+        console.log("App.js: User data exists:", userData, "isUserSetupComplete set to:", setupComplete);
       } else {
         setIsUserSetupComplete(false);
+        console.log("App.js: User data does not exist, isUserSetupComplete set to: false");
       }
     } else {
       setIsUserSetupComplete(false);
+      console.log("App.js: No user logged in, isUserSetupComplete set to: false");
     }
   }, []);
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      setUser(user);
-      await checkSetupCompletion(user); // Gọi hàm kiểm tra khi trạng thái đăng nhập thay đổi
+    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
+      setUser(currentUser);
+      console.log("App.js: onAuthStateChanged - User:", currentUser?.uid);
+      await checkSetupCompletion(currentUser);
+      console.log("App.js: onAuthStateChanged - isUserSetupComplete:", isUserSetupComplete);
     });
     return () => unsubscribe();
   }, [checkSetupCompletion]);
@@ -84,7 +88,7 @@ function App() {
   const handleLogout = () => {
     auth.signOut().then(() => {
       localStorage.removeItem("userLoggedIn");
-      localStorage.removeItem("userInfo"); // Ensure userInfo is removed on logout
+      localStorage.removeItem("userInfo");
       localStorage.removeItem("justRegistered");
       sessionStorage.clear();
       window.location.href = '/login';
@@ -119,7 +123,7 @@ function App() {
             path="/login"
             element={
               !user ? (
-                <LoginPage />
+                <Login />
               ) : (
                 <Navigate to={isUserSetupComplete ? "/about" : "/setup"} />
               )
@@ -129,6 +133,7 @@ function App() {
             path="/setup"
             element={user ? (<Setup onSetupComplete={async () => {await checkSetupCompletion(user); navigate("/about"); }} />) : (<Navigate to="/login" />)}
           />
+          <Route path="/profile" element={user ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/tracking" element={user ? <Tracking /> : <Navigate to="/login" />} />
           <Route path="/notifications" element={user ? <Notifications /> : <Navigate to="/login" />} />

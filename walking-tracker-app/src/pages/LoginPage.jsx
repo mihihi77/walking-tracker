@@ -20,7 +20,7 @@ const LoginPage = () => {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user && !localStorage.getItem("userLoggedIn")) {
+      if (user) {
         await handleUserRedirect(user);
       }
     });
@@ -48,7 +48,6 @@ const LoginPage = () => {
 
   const handleUserRedirect = async (user) => {
     const userDoc = await getDoc(doc(db, "users", user.uid));
-    localStorage.setItem("userLoggedIn", true);
     if (userDoc.exists()) {
       const userData = userDoc.data();
       if (userData && userData.goalSteps) {
@@ -75,18 +74,17 @@ const LoginPage = () => {
     }
 
     try {
+      let userCredential;
       if (isSignUp) {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         await setDoc(doc(db, "users", user.uid), {
           email: user.email,
           createdAt: new Date(),
         });
-        localStorage.setItem("userLoggedIn", true);
-        localStorage.setItem("justRegistered", "true");
-        navigate("/setup");
+        navigate("/setup"); // Sau signup luôn chuyển đến setup
       } else {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         await handleUserRedirect(user);
       }

@@ -1,10 +1,9 @@
-// ProfilePage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth, db } from '../firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
-const Setup = () => {
+const Setup = ({ onSetupComplete }) => {
   const [profileInfo, setProfileInfo] = useState({
     name: '',
     height: '',
@@ -57,9 +56,18 @@ const Setup = () => {
     };
 
     try {
-      await setDoc(doc(db, 'users', user.uid), userData, { merge: true }); // Sử dụng merge: true để cập nhật dữ liệu hiện có
+      console.log("SetupInfo.js: handleSubmit started");
+      await setDoc(doc(db, 'users', user.uid), userData, { merge: true });
+      console.log("SetupInfo.js: Data saved to Firestore");
       localStorage.setItem('userInfo', JSON.stringify(userData));
+      console.log("SetupInfo.js: userInfo saved to localStorage");
+      if (onSetupComplete) {
+        console.log("SetupInfo.js: Calling onSetupComplete with user:", user?.uid);
+        onSetupComplete(user);
+        console.log("SetupInfo.js: onSetupComplete called");
+      }
       navigate('/about');
+      console.log("SetupInfo.js: Navigated to /about");
     } catch (error) {
       console.error('Error updating profile data:', error);
       setLoading(false);
@@ -149,7 +157,7 @@ const Setup = () => {
             type="submit"
             className="bg-[#12a245] hover:bg-[#15d85a] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
           >
-            Update Information
+            Save
           </button>
         </form>
       </div>
