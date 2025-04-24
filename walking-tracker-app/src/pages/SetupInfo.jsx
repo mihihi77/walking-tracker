@@ -13,6 +13,7 @@ const Setup = () => {
     goalSteps: '',
   });
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const user = auth.currentUser;
 
   useEffect(() => {
@@ -44,6 +45,8 @@ const Setup = () => {
     e.preventDefault();
     if (!user) return;
 
+    setLoading(true);
+
     const userData = {
       displayName: profileInfo.name,
       height: parseFloat(profileInfo.height),
@@ -59,6 +62,7 @@ const Setup = () => {
       navigate('/about');
     } catch (error) {
       console.error('Error updating profile data:', error);
+      setLoading(false);
     }
   };
 

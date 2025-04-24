@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
-import {
-  doc,
-  getDoc,
-  setDoc
-} from "firebase/firestore";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithRedirect,
-  getRedirectResult,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCubes } from "@fortawesome/free-solid-svg-icons";
@@ -23,30 +17,34 @@ const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-  const [redirectPath, setRedirectPath] = useState(null);
 
   useEffect(() => {
-    const checkRedirectResult = async () => {
-      try {
-        const result = await getRedirectResult(auth);
-        if (result && result.user) {
-          await handleUserRedirect(result.user);
-        }
-      } catch (err) {
-        console.error("Redirect error:", err);
-      }
-    };
-
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user && !localStorage.getItem("userLoggedIn")) {
         await handleUserRedirect(user);
       }
     });
-
-    checkRedirectResult();
-
     return () => unsubscribe();
-  }, [navigate]);
+  }, []);
+
+  const mapErrorMessage = (errorCode) => {
+    switch (errorCode) {
+      case 'auth/user-not-found':
+        return 'Email is not registered.';
+      case 'auth/wrong-password':
+        return 'Incorrect password, please try again.';
+      case 'auth/email-already-in-use':
+        return 'This email is already registered.';
+      case 'auth/invalid-email':
+        return 'Invalid email format.';
+      case 'auth/weak-password':
+        return 'Password must be at least 6 characters long.';
+      case 'auth/too-many-requests':
+        return 'Too many attempts, please try again later.';
+      default:
+        return 'An error occurred. Please try again.';
+    }
+  };
 
   const handleUserRedirect = async (user) => {
     const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -54,17 +52,16 @@ const LoginPage = () => {
     if (userDoc.exists()) {
       const userData = userDoc.data();
       if (userData && userData.goalSteps) {
-        setRedirectPath("/about");
+        navigate("/about");
       } else {
-        setRedirectPath("/setup");
+        navigate("/setup");
       }
     } else {
       await setDoc(doc(db, "users", user.uid), {
         email: user.email,
         createdAt: new Date(),
       });
-      // localStorage.setItem("userLoggedIn", true);
-      setRedirectPath("/setup");
+      navigate("/setup");
     }
   };
 
@@ -87,45 +84,33 @@ const LoginPage = () => {
         });
         localStorage.setItem("userLoggedIn", true);
         localStorage.setItem("justRegistered", "true");
-        setRedirectPath("/setup");
+        navigate("/setup");
       } else {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        const userDoc = await getDoc(doc(db, "users", user.uid));
-
-        if (userDoc.exists()) {
-          localStorage.setItem("userLoggedIn", true);
-          const userData = userDoc.data();
-          if (userData && userData.goalSteps) {
-            setRedirectPath("/about");
-          } else {
-            setRedirectPath("/setup");
-          }
-        } else {
-          setRedirectPath("/setup");
-        }
+        await handleUserRedirect(user);
       }
     } catch (error) {
-      setError(error.message);
+      const friendlyMessage = mapErrorMessage(error.code);
+      setError(friendlyMessage);
       console.error("Authentication Error:", error);
     }
   };
 
-  const handleGoogleLogin = async () => {
-    const provider = new GoogleAuthProvider();
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Please enter your email to reset password.");
+      return;
+    }
     try {
-      await signInWithRedirect(auth, provider);
+      await sendPasswordResetEmail(auth, email);
+      alert("Password reset email sent! Please check your inbox.");
     } catch (error) {
-      setError(error.message);
-      console.error("Google Redirect Error:", error);
+      const friendlyMessage = mapErrorMessage(error.code);
+      setError(friendlyMessage);
+      console.error("Password Reset Error:", error);
     }
   };
-
-  useEffect(() => {
-    if (redirectPath) {
-      navigate(redirectPath);
-    }
-  }, [redirectPath, navigate]);
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -139,11 +124,11 @@ const LoginPage = () => {
             />
           </div>
           <div className="p-6 md:p-8">
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-4 justify-center"> 
               <FontAwesomeIcon icon={faCubes} className="text-gray-400 text-3xl mr-3" />
               <span className="text-2xl font-bold text-gray-400">WalkMate</span>
             </div>
-            <h5 className="text-xl font-bold text-gray-400 mb-4 tracking-wide">
+            <h5 className="text-xl font-bold text-gray-400 mb-4 tracking-wide justify-center text-center">
               {isSignUp ? "Sign up for your account" : "Sign in to your account"}
             </h5>
             {error && <p className="text-red-500 font-bold mb-2">{error}</p>}
@@ -181,9 +166,15 @@ const LoginPage = () => {
                 {isSignUp ? "Sign Up" : "Sign In"}
               </button>
             </form>
-            <a href="#!" className="inline-block align-baseline text-sm text-gray-400 hover:text-[#12a245] mb-2">
-              Forgot password?
-            </a>
+            {!isSignUp && (
+              <a 
+                href="#!" 
+                onClick={handleForgotPassword}
+                className="inline-block align-baseline text-sm text-gray-400 hover:text-[#12a245] mb-2"
+              >
+                Forgot password?
+              </a>
+            )}
             <p className="text-center text-gray-400 text-sm mb-4">
               {isSignUp ? (
                 <>
@@ -209,16 +200,6 @@ const LoginPage = () => {
                 </>
               )}
             </p>
-            <button
-              onClick={handleGoogleLogin}
-              className="bg-[#12a245] hover:bg-[#12a245] text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
-            >
-              Sign In with Google
-            </button>
-            <div className="mt-4 text-center text-gray-500 text-xs">
-              <a href="#!" className="mr-2 hover:text-[#12a245]">Terms of use</a>
-              <a href="#!" className="hover:text-[#12a245]">Privacy policy</a>
-            </div>
           </div>
         </div>
       </div>

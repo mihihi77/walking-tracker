@@ -6,7 +6,6 @@ import "./styles/App.css";
 import React, { useEffect, useState, useCallback } from "react";
 import { Typography, Box, Breadcrumbs, Link } from '@mui/material';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
 import { auth, db } from './firebase';  // Import từ Firebase
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -17,6 +16,7 @@ import Notifications from './pages/Notifications';
 import About from './pages/About';  // Trang About sẽ là trang chủ
 import LoginPage from './pages/LoginPage';  // Trang Login
 import Setup from './pages/SetupInfo';  // Trang Setup
+import Navbar from "./components/Navbar";
 
 const MyBreadcrumbs = () => {
   const location = useLocation();
@@ -127,7 +127,7 @@ function App() {
           />
           <Route
             path="/setup"
-            element={user ? <Setup onSetupComplete={checkSetupCompletion} /> : <Navigate to="/login" />}
+            element={user ? (<Setup onSetupComplete={async () => {await checkSetupCompletion(user); navigate("/about"); }} />) : (<Navigate to="/login" />)}
           />
           <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
           <Route path="/tracking" element={user ? <Tracking /> : <Navigate to="/login" />} />
