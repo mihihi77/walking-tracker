@@ -5,7 +5,7 @@ import Activities from '../components/ActivitiesWidget';
 import useUserStats from '../hooks/useUserStats';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-import '@fontsource/poppins'; 
+// import '@fontsource/poppins'; 
 const sectionTitleStyle = {
   fontSize: "2.5rem",
   fontWeight: "700",

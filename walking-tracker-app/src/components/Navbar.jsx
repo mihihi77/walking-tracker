@@ -14,6 +14,8 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { auth } from '../firebase'; // Đảm bảo đường dẫn này đúng
+import NotificationsIcon from '@mui/icons-material/Notifications'; // Import Notifications Icon
+import { Badge } from '@mui/material';
 
 const pages = ['About', 'Dashboard', 'Tracking'];
 const settings = ['Profile', 'Logout'];
@@ -22,10 +24,19 @@ function Navbar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [notifications, setNotifications] = React.useState([]); // Notifications state
+  const [anchorElNoti, setAnchorElNoti] = React.useState(null); // Notifications menu anchor
+
+  // Fetch notifications from localStorage on page load
+  React.useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('notifications') || '[]');
+    setNotifications(stored);
+  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+  
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -38,6 +49,14 @@ function Navbar() {
     setAnchorElUser(null);
   };
 
+  const handleOpenNotiMenu = (event) => {
+    setAnchorElNoti(event.currentTarget); // Open notifications menu
+  };
+
+  const handleCloseNotiMenu = () => {
+    setAnchorElNoti(null); // Close notifications menu
+  };
+
   const handleLogout = () => {
     auth.signOut().then(() => {
       localStorage.removeItem("userLoggedIn");
@@ -47,9 +66,14 @@ function Navbar() {
       navigate('/login');
     }).catch((error) => {
       console.error("Lỗi đăng xuất:", error);
-      // Xử lý lỗi đăng xuất nếu cần
     });
     handleCloseUserMenu();
+  };
+
+  const handleNavigation = (page) => {
+    handleCloseNavMenu();
+    handleCloseNotiMenu();
+    navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
   };
 
   return (
@@ -115,10 +139,7 @@ function Navbar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => {
-                  navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
-                  handleCloseNavMenu();
-                }}
+                onClick={() => handleNavigation(page)}
                 sx={{ color: 'white', mx: 1 }}
               >
                 {page}
@@ -126,8 +147,42 @@ function Navbar() {
             ))}
           </Box>
 
-          {/* Right section with avatar */}
+          {/* Right section with avatar and notifications */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Notifications Icon with margin spacing */}
+            <Tooltip title="Notifications">
+              <IconButton onClick={handleOpenNotiMenu} sx={{ p: 0, color: 'white', mr: 3 }}> {/* Added mr: 3 */}
+                <Badge badgeContent={notifications.length} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+
+            {/* Notifications menu */}
+            <Menu
+              anchorEl={anchorElNoti}
+              open={Boolean(anchorElNoti)}
+              onClose={handleCloseNotiMenu}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              sx={{ mt: '45px' }}
+            >
+              <MenuItem disabled><Typography textAlign="center">Recent Notifications</Typography></MenuItem>
+              {notifications.length === 0 ? (
+                <MenuItem><Typography textAlign="center">No activities yet. Start your first attempt! 🏃‍♂️</Typography></MenuItem>
+              ) : (
+                notifications.map((n, i) => (
+                  <MenuItem key={i}>
+                    <Box>
+                      <Typography fontWeight="bold">{n.title}</Typography>
+                      <Typography variant="body2">{n.body}</Typography>
+                    </Box>
+                  </MenuItem>
+                ))
+              )}
+            </Menu>
+
+            {/* Avatar menu */}
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="User" src="https://i.pravatar.cc/300" />
