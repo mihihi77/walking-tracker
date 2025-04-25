@@ -15,19 +15,19 @@ const CardWidget = ({ title, value, icon, color = "green" }) => {
       minWidth: 200,
       maxWidth: 400,
       marginLeft: '12px',
-      backgroundColor: '#ffffff',
+      backgroundColor: '#121212',
       padding: '15px',
       borderRadius: '7px',
       boxShadow: '0 3px 6px rgba(0, 0, 0, 0.2)',
     }}>
       <CardContent>
-        <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>
+        <Typography gutterBottom sx={{ color: '#12a245', fontSize: 18, fontWeight: 'bold' }}>
           {title}
         </Typography>
-        <Typography variant="h5" component="div">
+        <Typography variant="h5" component="div" sx={{ color: '#ffffff' }}>
           {value}
         </Typography>
-        <Typography sx={{ color: 'text.primary', mb: 1.5 }}>
+        <Typography sx={{ color: '#12a245', mb: 1.5 }}>
           {icon}
         </Typography>
       </CardContent>
@@ -37,4 +37,5 @@ const CardWidget = ({ title, value, icon, color = "green" }) => {
     </Card>
   );
 };
+
 export default CardWidget;

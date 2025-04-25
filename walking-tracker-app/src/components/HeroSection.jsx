@@ -1,7 +1,12 @@
 import React from "react";
 import HeroImg from "../assets/HeroImg.png";
-
+import {useNavigate } from "react-router-dom";
 const Hero = () => {
+  const navigate = useNavigate(); // Lấy hàm navigate
+
+  const handleTrackNowClick = () => {
+    navigate('/tracking'); // Điều hướng đến trang /tracking
+  };
   return ( 
    <>
      <section>
@@ -17,7 +22,7 @@ const Hero = () => {
                 The point of using WalkMate is to improve your overall health by tracking your walking habits, staying motivated, and achieving your fitness goals.
               </p>
               <div className="flex justify-center items-center gap-8 md:justify-start !mt-4">
-                <button className="primary-btn flex items-center gap-2">
+                <button className="primary-btn flex items-center gap-2" onClick={handleTrackNowClick}>
                    {" "}
                    Track Now
                 </button>

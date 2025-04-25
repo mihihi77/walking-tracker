@@ -141,7 +141,7 @@ const Profile = () => {
             </div>
             <div>
               <label htmlFor="goalSteps" className="block text-white-700 text-sm font-bold mb-2">
-                Goal Steps/Day
+                Goal Distance/Day (km)
               </label>
               <input
                 type="number"
@@ -183,7 +183,7 @@ const Profile = () => {
               <p className="text-white-700"><span className="font-bold">Activity Level:</span> {profileInfo.activityLevel}</p>
             </div>
             <div>
-              <p className="text-white-700"><span className="font-bold">Goal Steps/Day:</span> {profileInfo.goalSteps}</p>
+              <p className="text-white-700"><span className="font-bold">Goal Distance/Day (km):</span> {profileInfo.goalSteps}</p>
             </div>
             <button
               onClick={handleEditClick}

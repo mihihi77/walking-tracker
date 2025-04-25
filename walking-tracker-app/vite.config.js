@@ -11,7 +11,8 @@ export default defineConfig({
     strictPort: true, // Nếu cổng đã được sử dụng, sẽ không tự động tìm cổng khác
     allowedHosts: [ 'all',
       'localhost', // Cho phép localhost
-      "3019-2405-4802-a5d0-3c90-e0e4-dced-c5b5-da25.ngrok-free.app"
+      "3019-2405-4802-a5d0-3c90-e0e4-dced-c5b5-da25.ngrok-free.app",
+      "b26c-2405-4802-a5d0-3c90-61a6-ed82-9ee2-629c.ngrok-free.app",
     ], // Cho phép tất cả các host
     open: true, // Mở trình duyệt khi ứng dụng bắt đầu
 

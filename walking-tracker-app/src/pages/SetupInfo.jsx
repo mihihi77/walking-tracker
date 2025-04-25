@@ -142,7 +142,7 @@ const Setup = ({ onSetupComplete }) => {
           </div>
           <div>
             <label htmlFor="goalSteps" className="block text-white-700 text-sm font-bold mb-2">
-              Goal Steps/Day
+              Target Distances (km)
             </label>
             <input
               type="number"

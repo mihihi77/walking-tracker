@@ -13,6 +13,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import { auth } from '../firebase'; // Đảm bảo đường dẫn này đúng
 
 const pages = ['About', 'Dashboard', 'Tracking', 'Notifications'];
 const settings = ['Profile', 'Logout'];
@@ -38,9 +39,17 @@ function Navbar() {
   };
 
   const handleLogout = () => {
-    // Xử lý logic logout tại đây (ví dụ: xóa token, clear local storage)
+    auth.signOut().then(() => {
+      localStorage.removeItem("userLoggedIn");
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("justRegistered");
+      sessionStorage.clear();
+      navigate('/login');
+    }).catch((error) => {
+      console.error("Lỗi đăng xuất:", error);
+      // Xử lý lỗi đăng xuất nếu cần
+    });
     handleCloseUserMenu();
-    navigate('/login'); // Chuyển hướng đến trang đăng nhập sau khi logout (ví dụ)
   };
 
   return (
@@ -150,7 +159,7 @@ function Navbar() {
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   {setting === 'Profile' ? (
                     <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography textAlign="center">{setting}</Typography>
+                      <Typography textAlign="center">{setting}</Typography>
                     </Link>
                   ) : (
                     <Typography textAlign="center" onClick={handleLogout}>{setting}</Typography>

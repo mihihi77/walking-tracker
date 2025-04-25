@@ -5,6 +5,15 @@ import Activities from '../components/ActivitiesWidget';
 import useUserStats from '../hooks/useUserStats';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
+const sectionTitleStyle = {
+  fontSize: "2.5rem",
+  fontWeight: "700",
+  marginBottom: "1.5rem", // Điều chỉnh marginBottom cho phù hợp với trang này
+  color: "#1db954",
+  borderBottom: "2px solid #1db954",
+  paddingBottom: "0.5rem"
+};
+
 const Dashboard = () => {
   const [userId, setUserId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,7 +34,7 @@ const Dashboard = () => {
   }, [auth]);
 
   const { calories, steps, activeDays, weeklyCalories, weeklySteps, distance,
-  todayCalories, todayDistance, } = useUserStats(userId);
+    todayCalories, todayDistance, } = useUserStats(userId);
 
   if (loading) {
     return <Typography variant="h6">Loading...</Typography>;
@@ -39,20 +48,20 @@ const Dashboard = () => {
     <Container maxWidth="lg" sx={{ padding: '0px' }}>
       {/* Target Section */}
       <Box sx={{ marginBottom: '40px' }}>
-        <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '20px' }}>Today</Typography>
+        <Typography variant="h5" style={sectionTitleStyle}>Today</Typography>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4}>
-          <CardWidget title="Calories Burned Today" value={(todayCalories ?? 0).toLocaleString()} icon="🔥" color="green" />
+            <CardWidget title="Calories Burned Today" value={(todayCalories ?? 0).toLocaleString()} icon="🔥" color="green" />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-          <CardWidget title="Distance Today (km)" value={(todayDistance ?? 0)} icon="📏" color="green" />
+            <CardWidget title="Distance Today (km)" value={(todayDistance ?? 0)} icon="📏" color="green" />
           </Grid>
         </Grid>
       </Box>
 
       {/* Last Week Section */}
       <Box>
-        <Typography variant="h5" sx={{ fontWeight: 'bold', marginBottom: '20px' }}>This Week</Typography>
+        <Typography variant="h5" style={sectionTitleStyle}>This Week</Typography>
 
         <Box sx={{ marginBottom: '30px' }}>
           <Activities userId={userId} />
@@ -60,30 +69,30 @@ const Dashboard = () => {
 
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={4}>
-            <CardWidget 
-            title="Calories Burned" 
-            value={(calories ?? 0).toLocaleString()} 
-            icon="🔥" />
+            <CardWidget
+              title="Calories Burned"
+              value={(calories ?? 0).toLocaleString()}
+              icon="🔥" />
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <CardWidget 
-            title="Steps Walked" 
-            value={(steps ?? 0).toLocaleString()} 
-            icon="👟" />
-          </Grid>
-
-          <Grid item xs={12} sm={6} md={4}>
-            <CardWidget 
-            title="Distance (km)" 
-            value={distance}
-            icon="📏" /> 
+            <CardWidget
+              title="Steps Walked"
+              value={(steps ?? 0).toLocaleString()}
+              icon="👟" />
           </Grid>
 
           <Grid item xs={12} sm={6} md={4}>
-            <CardWidget 
-            title="Active Days" 
-            value={(activeDays ?? 0)} 
-            icon="📅" />
+            <CardWidget
+              title="Distance (km)"
+              value={distance}
+              icon="📏" />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={4}>
+            <CardWidget
+              title="Active Days"
+              value={(activeDays ?? 0)}
+              icon="📅" />
           </Grid>
         </Grid>
       </Box>
