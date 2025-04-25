@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, db } from "../firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -116,7 +117,7 @@ const LoginPage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="hidden md:block">
             <img
-              src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/img1.webp"
+              src="/login.jpg"
               alt="login form"
               className="w-full h-full object-cover rounded-l-lg"
             />

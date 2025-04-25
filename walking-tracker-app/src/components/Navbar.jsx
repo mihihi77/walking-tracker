@@ -55,77 +55,63 @@ function Navbar() {
   return (
     <AppBar position="fixed" sx={{ backgroundColor: '#121212', top: 0, left: 0, right: 0, zIndex: 1300 }}>
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          {/* Desktop icon + title */}
-          <DirectionsWalkIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="#"
-            sx={{
-              mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            WalkMate
-          </Typography>
+        <Toolbar disableGutters sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          {/* Left section with logo */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            {/* Mobile menu icon */}
+            <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }}>
+              <IconButton size="large" onClick={handleOpenNavMenu} color="inherit">
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorElNav}
+                open={Boolean(anchorElNav)}
+                onClose={handleCloseNavMenu}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+                sx={{ display: { xs: 'block', md: 'none' } }}
+              >
+                {pages.map((page) => (
+                  <MenuItem
+                    key={page}
+                    onClick={() => {
+                      navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
+                      handleCloseNavMenu();
+                    }}
+                  >
+                    <Typography textAlign="center">{page}</Typography>
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
 
-          {/* Mobile menu icon */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
-            <IconButton size="large" onClick={handleOpenNavMenu} color="inherit">
-              <MenuIcon />
-            </IconButton>
-            <Menu
-              anchorEl={anchorElNav}
-              open={Boolean(anchorElNav)}
-              onClose={handleCloseNavMenu}
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-              transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-              sx={{ display: { xs: 'block', md: 'none' } }}
+            {/* Desktop & Mobile logo */}
+            <DirectionsWalkIcon sx={{ mr: 1 }} />
+            <Typography
+              variant="h6"
+              noWrap
+              component="a"
+              href="#"
+              sx={{
+                fontFamily: 'monospace',
+                fontWeight: 700,
+                letterSpacing: '.2rem',
+                color: 'inherit',
+                textDecoration: 'none',
+              }}
             >
-              {pages.map((page) => (
-                <MenuItem
-                  key={page}
-                  onClick={() => {
-                    navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
-                    handleCloseNavMenu();
-                  }}
-                >
-                  <Typography textAlign="center">{page}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
+              WalkMate
+            </Typography>
           </Box>
 
-          {/* Mobile icon + title */}
-          <DirectionsWalkIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.2rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            WalkMate
-          </Typography>
-
-          {/* Desktop menu items */}
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          {/* Center section with navigation links (desktop only) */}
+          <Box sx={{ 
+            display: { xs: 'none', md: 'flex' }, 
+            position: 'absolute', 
+            left: '50%', 
+            transform: 'translateX(-50%)',
+            justifyContent: 'center'
+          }}>
             {pages.map((page) => (
               <Button
                 key={page}
@@ -133,15 +119,15 @@ function Navbar() {
                   navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
                   handleCloseNavMenu();
                 }}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ color: 'white', mx: 1 }}
               >
                 {page}
               </Button>
             ))}
           </Box>
 
-          {/* Avatar menu */}
-          <Box sx={{ flexGrow: 0 }}>
+          {/* Right section with avatar */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar alt="User" src="https://i.pravatar.cc/300" />
