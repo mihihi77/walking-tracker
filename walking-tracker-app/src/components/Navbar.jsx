@@ -13,6 +13,8 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { Badge } from '@mui/material';
 
 const pages = ['About', 'Dashboard', 'Tracking', 'Notifications'];
 const settings = ['Profile', 'Logout'];
@@ -21,6 +23,26 @@ function Navbar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [notifications, setNotifications] = React.useState([]); // Số lượng thông báo
+  const [anchorElNoti, setAnchorElNoti] = React.useState(null); // Thông báo
+
+  React.useEffect(() => {
+    const stored = JSON.parse(localStorage.getItem('notifications') || '[]');
+    setNotifications(stored)
+  }, []);
+
+  const handleOpenNotiMenu = (event) => {
+    setAnchorElNoti(event.currentTarget);
+  };
+
+  const handleCloseNotiMenu = () => {
+    setAnchorElNoti(null);
+  };
+
+  const handleLogout = () => {
+    handleCloseUserMenu();
+    navigate('/login');
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -35,12 +57,6 @@ function Navbar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
-  };
-
-  const handleLogout = () => {
-    // Xử lý logic logout tại đây (ví dụ: xóa token, clear local storage)
-    handleCloseUserMenu();
-    navigate('/login'); // Chuyển hướng đến trang đăng nhập sau khi logout (ví dụ)
   };
 
   return (
@@ -129,6 +145,38 @@ function Navbar() {
                 {page}
               </Button>
             ))}
+          </Box>
+          {/* Notifications */}
+          <Box sx={{ flexGrow: 0, mr: 2 }}>
+            <Tooltip title="Notifications">
+              <IconButton onClick={handleOpenNotiMenu} sx={{ p: 0, color: 'white' }}>
+                <Badge badgeContent={notifications.length} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+            </Tooltip>
+            <Menu
+              anchorEl={anchorElNoti}
+              open={Boolean(anchorElNoti)}
+              onClose={handleCloseNotiMenu}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              sx={{ mt: '45px' }}
+            >
+              <MenuItem disabled><Typography textAlign="center">Recent Notifications</Typography></MenuItem>
+              {notifications.length === 0 ? (
+                <MenuItem><Typography textAlign="center">No activities yet. Start your first attempt! 🏃‍♂️</Typography></MenuItem>
+              ) : (
+                notifications.map((n, i) => (
+                  <MenuItem key={i}>
+                    <Box>
+                      <Typography fontWeight="bold">{n.title}</Typography>
+                      <Typography variant="body2">{n.body}</Typography>
+                    </Box>
+                  </MenuItem>
+                ))
+              )}
+            </Menu>
           </Box>
 
           {/* Avatar menu */}
