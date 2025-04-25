@@ -13,40 +13,29 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import { Badge } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications'; // Notifications icon
+import { Badge } from '@mui/material'; // Badge for notifications count
 
-const pages = ['About', 'Dashboard', 'Tracking', 'Notifications'];
+const pages = ['About', 'Dashboard', 'Tracking'];
 const settings = ['Profile', 'Logout'];
 
 function Navbar() {
   const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [notifications, setNotifications] = React.useState([]); // Số lượng thông báo
-  const [anchorElNoti, setAnchorElNoti] = React.useState(null); // Thông báo
+  const [notifications, setNotifications] = React.useState([]); // Number of notifications
+  const [anchorElNoti, setAnchorElNoti] = React.useState(null); // Notifications menu anchor
 
+  // Fetch notifications from localStorage on page load
   React.useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('notifications') || '[]');
-    setNotifications(stored)
+    setNotifications(stored);
   }, []);
-
-  const handleOpenNotiMenu = (event) => {
-    setAnchorElNoti(event.currentTarget);
-  };
-
-  const handleCloseNotiMenu = () => {
-    setAnchorElNoti(null);
-  };
-
-  const handleLogout = () => {
-    handleCloseUserMenu();
-    navigate('/login');
-  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -57,6 +46,25 @@ function Navbar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleOpenNotiMenu = (event) => {
+    setAnchorElNoti(event.currentTarget); // Open notifications menu
+  };
+
+  const handleCloseNotiMenu = () => {
+    setAnchorElNoti(null); // Close notifications menu
+  };
+
+  const handleLogout = () => {
+    handleCloseUserMenu();
+    navigate('/login');
+  };
+
+  const handleNavigation = (page) => {
+    handleCloseNavMenu();
+    handleCloseNotiMenu();
+    navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
   };
 
   return (
@@ -97,13 +105,7 @@ function Navbar() {
               sx={{ display: { xs: 'block', md: 'none' } }}
             >
               {pages.map((page) => (
-                <MenuItem
-                  key={page}
-                  onClick={() => {
-                    navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
-                    handleCloseNavMenu();
-                  }}
-                >
+                <MenuItem key={page} onClick={() => handleNavigation(page)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
@@ -136,17 +138,15 @@ function Navbar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => {
-                  navigate(`/${page.toLowerCase() === 'about' ? '' : page.toLowerCase()}`);
-                  handleCloseNavMenu();
-                }}
+                onClick={() => handleNavigation(page)}
                 sx={{ my: 2, color: 'white', display: 'block' }}
               >
                 {page}
               </Button>
             ))}
           </Box>
-          {/* Notifications */}
+
+          {/* Notifications Icon */}
           <Box sx={{ flexGrow: 0, mr: 2 }}>
             <Tooltip title="Notifications">
               <IconButton onClick={handleOpenNotiMenu} sx={{ p: 0, color: 'white' }}>
@@ -198,7 +198,7 @@ function Navbar() {
                 <MenuItem key={setting} onClick={handleCloseUserMenu}>
                   {setting === 'Profile' ? (
                     <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography textAlign="center">{setting}</Typography>
+                      <Typography textAlign="center">{setting}</Typography>
                     </Link>
                   ) : (
                     <Typography textAlign="center" onClick={handleLogout}>{setting}</Typography>
