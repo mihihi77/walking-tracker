@@ -14,10 +14,12 @@ const Hero = () => {
          {/* Brand info */}
          <div className="flex flex-col justify-center py-14 md:py-0">
             <div className="text-center md:text-left space-y-6">
-              <h1 className="text-5xl lg:text-6xl font-bold leading-relaxed xl:leading-normal">
-                WalkMate Track your Progress{" "}
-                <span className="text-primary">Easily</span>
-              </h1>
+            <h1 className="text-5xl lg:text-6xl font-bold leading-tight xl:leading-tight">
+              WalkMate Track your Progress
+              <br />
+              <span className="text-primary block mt-3">Easily</span>
+            </h1>
+
               <p className="text-white-600 xl:max-w-[500px] leading-relaxed">
                 The point of using WalkMate is to improve your overall health by tracking your walking habits, staying motivated, and achieving your fitness goals.
               </p>

@@ -15,7 +15,7 @@ import MenuItem from '@mui/material/MenuItem';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { auth } from '../firebase'; // Đảm bảo đường dẫn này đúng
 
-const pages = ['About', 'Dashboard', 'Tracking', 'Notifications'];
+const pages = ['About', 'Dashboard', 'Tracking'];
 const settings = ['Profile', 'Logout'];
 
 function Navbar() {

@@ -10,6 +10,9 @@ export default {
         primary: "#1db954",
         secondary: "#121212",
       },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+      },
       container: {
         center: true,
         padding: {
