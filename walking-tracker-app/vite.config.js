@@ -12,6 +12,7 @@ export default defineConfig({
     allowedHosts: [ 'all',
       'localhost', // Cho phép localhost
       '155f-118-71-17-49.ngrok-free.app',
+      '3b5a-2405-4802-a5d0-3c90-61a6-ed82-9ee2-629c.ngrok-free.app',
     ], // Cho phép tất cả các host
     open: true, // Mở trình duyệt khi ứng dụng bắt đầu
 
