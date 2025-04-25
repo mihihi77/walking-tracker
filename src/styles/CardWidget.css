@@ -1,0 +1,21 @@
+/* src/styles/card-widget.css */
+
+/* Container chứa các thẻ */
+.card-container {
+    display: flex;             /* Sử dụng Flexbox để xếp các thẻ nằm ngang */
+    justify-content: flex-start; /* Căn các thẻ về lề trái */
+    gap: 20px;                 /* Khoảng cách giữa các thẻ */
+    padding: 20px;             /* Padding cho container */
+    flex-wrap: wrap;           /* Cho phép các thẻ xuống dòng nếu không đủ chỗ */
+  }
+  
+  /* Thẻ (Card) */
+  .card {
+    background-color: #f1f1f1;
+    padding: 20px;
+    border-radius: 8px;
+    width: 200px;              /* Đặt chiều rộng cho mỗi thẻ */
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
